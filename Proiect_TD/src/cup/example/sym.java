@@ -11,30 +11,31 @@ public interface sym {
   public static final int DIVIDE = 27;
   public static final int FUNCTION = 12;
   public static final int POWER = 28;
-  public static final int GE = 37;
   public static final int ASSIGNMENT = 26;
   public static final int UMINUS = 5;
   public static final int INTEGER = 40;
   public static final int NOTEQUAL = 33;
+  public static final int GREATER = 36;
   public static final int LPAREN = 7;
   public static final int SEMI = 2;
-  public static final int REALVAL = 43;
+  public static final int REALVAL = 41;
   public static final int ENDDO = 20;
+  public static final int LESS = 34;
   public static final int FOR = 23;
   public static final int MINUS = 4;
-  public static final int WRITE = 46;
+  public static final int WRITE = 47;
   public static final int RPAREN = 8;
-  public static final int DRAW = 49;
+  public static final int DRAW = 50;
   public static final int NOT = 32;
   public static final int AND = 30;
-  public static final int LT = 34;
   public static final int ENDFUNCTION = 13;
   public static final int OR = 31;
+  public static final int COMMA = 10;
   public static final int ENDFOR = 25;
   public static final int ENDPROGRAM = 22;
   public static final int PLUS = 3;
+  public static final int LESSEQ = 35;
   public static final int IF = 14;
-  public static final int LE = 35;
   public static final int EOF = 0;
   public static final int RETURN = 11;
   public static final int EQUAL = 9;
@@ -42,24 +43,24 @@ public interface sym {
   public static final int PROGRAM = 21;
   public static final int NUMBER = 39;
   public static final int MOD = 29;
-  public static final int SET_LINE = 51;
+  public static final int SET_LINE = 52;
   public static final int EQ = 38;
-  public static final int SET_COLOR = 50;
+  public static final int SET_COLOR = 51;
   public static final int REAL = 42;
-  public static final int MOVE = 48;
+  public static final int MOVE = 49;
   public static final int TIMES = 6;
-  public static final int LITERAL = 44;
+  public static final int LITERAL = 43;
   public static final int ENDIF = 17;
   public static final int ELSE = 16;
-  public static final int READ = 45;
+  public static final int READ = 46;
   public static final int TO = 24;
   public static final int WHILE = 18;
-  public static final int CLEAR = 47;
+  public static final int CLEAR = 48;
   public static final int THEN = 15;
-  public static final int STRING = 41;
-  public static final int GT = 36;
+  public static final int STRING = 45;
+  public static final int GREATEREQ = 37;
   public static final int DO = 19;
-  public static final int IDENTIFIER = 10;
+  public static final int IDENTIFIER = 44;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -71,7 +72,7 @@ public interface sym {
   "LPAREN",
   "RPAREN",
   "EQUAL",
-  "IDENTIFIER",
+  "COMMA",
   "RETURN",
   "FUNCTION",
   "ENDFUNCTION",
@@ -95,17 +96,18 @@ public interface sym {
   "OR",
   "NOT",
   "NOTEQUAL",
-  "LT",
-  "LE",
-  "GT",
-  "GE",
+  "LESS",
+  "LESSEQ",
+  "GREATER",
+  "GREATEREQ",
   "EQ",
   "NUMBER",
   "INTEGER",
-  "STRING",
-  "REAL",
   "REALVAL",
+  "REAL",
   "LITERAL",
+  "IDENTIFIER",
+  "STRING",
   "READ",
   "WRITE",
   "CLEAR",

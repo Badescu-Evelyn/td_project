@@ -31,27 +31,164 @@ init with {:
 scan with {: return lexer.next_token(); :};
 
 /* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, UMINUS, TIMES, LPAREN, RPAREN, EQUAL, IDENTIFIER, RETURN;
+terminal            SEMI, PLUS, MINUS, UMINUS, TIMES, LPAREN, RPAREN, EQUAL, COMMA, RETURN;
 terminal			FUNCTION, ENDFUNCTION, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDDO;
-terminal 			PROGRAM, ENDPROGRAM, FOR, TO, ENDFOR, ASSIGNMENT, DIVIDE, POWER, MOD, AND, OR, NOT, NOTEQUAL, LT, LE, GT, GE, EQ;
+terminal 			PROGRAM, ENDPROGRAM, FOR, TO, ENDFOR, ASSIGNMENT, DIVIDE, POWER, MOD, AND, OR, NOT;
+terminal            NOTEQUAL, LESS, LESSEQ, GREATER, GREATEREQ, EQ;
 terminal Integer    NUMBER;        // our scanner provides numbers as integers
-terminal 			INTEGER, STRING, REAL;
+terminal Integer	INTEGER;
 terminal float		REALVAL;
+terminal float      REAL;
 terminal String		LITERAL;
+terminal String     IDENTIFIER;
+terminal String     STRING;
 terminal            READ, WRITE, CLEAR, MOVE, DRAW, SET_COLOR, SET_LINE;
 
 /* Non terminals */
 non terminal            expr_list;
 non terminal Integer    expr;      // used to store evaluated subexpressions
+non terminal 			atom, program, id;
+non terminal 			declares, statement, statement_list, return_type, expression;
+non terminal 			declares_list, parameteres, formal_parameteres, formal_declaration;
+non terminal 			function_declaration, function;
+non terminal 			boolean_expression_list, boolean_expression;
+non terminal 			function_call_expression, function_call_list_parameters;
 
 /* Precedences */
 precedence left PLUS, MINUS;
-precedence left TIMES;
+precedence left TIMES, DIVIDE, MOD;
 precedence left UMINUS;
+precedence left LPAREN, RPAREN;
+precedence left LESS, GREATER, LESSEQ, GREATEREQ;
+precedence left NOT, AND, OR, EQUAL;
+precedence left ASSIGNMENT;
 
 
 
 /* The grammar rules */
+
+
+program ::= PROGRAM id SEMI {: System.out.println("start program"); :}
+			declares_list
+			statement_list
+			ENDPROGRAM SEMI {: System.out.println("end program"); :}
+;
+			
+declares_list ::= 
+				declares_list declares {: System.out.println("declaration list"); :}
+				| declares 
+				;
+				
+declares ::= 
+			return_type id SEMI {: System.out.println("declaration"); :}
+			| return_type id ASSIGNMENT expression SEMI {: System.out.println("declaration"); :}
+			;
+				
+function ::= 
+			function_declaration {: System.out.println("Function start"); :}
+			declares_list
+			statement_list
+			RETURN expression SEMI
+			ENDFUNCTION SEMI {: System.out.println("Function end"); :}
+;
+
+
+function_declaration ::=
+	 return_type FUNCTION id parameteres SEMI
+;
+				
+parameteres ::= 
+			LPAREN RPAREN
+			| LPAREN formal_parameteres RPAREN
+			;
+			
+formal_parameteres ::= 
+					formal_parameteres COMMA formal_declaration
+					| formal_declaration
+					;
+					
+formal_declaration ::= 
+					return_type id
+					;
+		
+statement_list ::= 
+				statement_list statement
+				| statement
+				;	
+						
+return_type ::=
+			INTEGER
+			| STRING
+			| REAL
+			;
+
+statement ::= 
+	READ IDENTIFIER SEMI {: System.out.println("statement");:}
+	| WRITE expression SEMI {: System.out.println("write statement");:}
+	| MOVE LPAREN expression COMMA expression RPAREN SEMI {: System.out.println("move statement");:}
+	| DRAW LPAREN expression COMMA expression RPAREN SEMI {: System.out.println("draw statement");:}
+	| CLEAR LPAREN RPAREN SEMI {: System.out.println("clear statement");:}
+	| SET_COLOR LPAREN LITERAL RPAREN SEMI {: System.out.println("set_color statement");:}
+	| SET_LINE LPAREN expression COMMA expression RPAREN SEMI {: System.out.println("set_line statement");:}
+	| id ASSIGNMENT expression SEMI {: System.out.println("expression statement");:}
+	| IF LPAREN boolean_expression_list RPAREN THEN statement_list ELSE statement_list ENDIF {: System.out.println("if statement");:}
+	| WHILE LPAREN boolean_expression_list RPAREN DO statement_list ENDDO {: System.out.println("while statement");:}
+	| FOR INTEGER id ASSIGNMENT atom TO LPAREN boolean_expression_list RPAREN DO statement_list ENDFOR {: System.out.println("for statement");:}
+	| RETURN expression SEMI {: System.out.println("return expression statement");:}
+	| function_call_expression SEMI {: System.out.println("functioncall statement");:}
+	| function {: System.out.println("function declaration");:}
+;
+
+expression ::=
+	 expression PLUS expression {: System.out.println("addition expression"); :}
+	| expression MINUS expression  {: System.out.println("substraction expression"); :}
+	| expression TIMES expression {: System.out.println("multiplication expression"); :}
+	| expression DIVIDE expression {: System.out.println("division expression"); :}
+	| expression MOD expression {: System.out.println("mod expression"); :}
+	| MINUS expression {: System.out.println("-1 expression"); :}
+	| atom
+;
+
+boolean_expression_list ::=
+					LPAREN boolean_expression_list RPAREN AND LPAREN boolean_expression RPAREN {: System.out.println("bool list and bool"); :}
+					| LPAREN boolean_expression_list RPAREN OR LPAREN boolean_expression RPAREN {: System.out.println("bool list or bool"); :}
+					| LPAREN boolean_expression_list RPAREN LESS LPAREN boolean_expression RPAREN {: System.out.println("bool list < bool"); :}
+					| LPAREN boolean_expression_list RPAREN GREATER LPAREN boolean_expression RPAREN {: System.out.println("bool list > bool"); :}
+					| LPAREN boolean_expression_list RPAREN LESSEQ LPAREN boolean_expression RPAREN {: System.out.println("bool list <= bool"); :}
+					| LPAREN boolean_expression_list RPAREN GREATEREQ LPAREN boolean_expression RPAREN {: System.out.println("bool list >= bool"); :}
+					| LPAREN boolean_expression_list RPAREN EQUAL LPAREN boolean_expression RPAREN {: System.out.println("bool list = bool"); :}
+					| boolean_expression {: System.out.println("boolean expression"); :}
+;
+
+boolean_expression ::= 
+					atom EQUAL atom
+					| atom LESS atom
+					| atom GREATER atom
+					| atom LESSEQ atom
+					| atom GREATEREQ atom
+					| atom OR atom
+					| atom AND atom
+;
+
+atom ::=
+	 NUMBER 
+	| LITERAL 
+	| REALVAL
+	| id 
+;
+function_call_expression ::=
+	 id LPAREN RPAREN
+	| id LPAREN function_call_list_parameters RPAREN
+;
+
+function_call_list_parameters ::=
+	function_call_list_parameters COMMA expression
+	| atom
+;
+id ::=
+	 IDENTIFIER
+;
+
 expr_list ::= expr_list expr:e SEMI         {: System.out.println(e); :}
             | expr:e SEMI                   {: System.out.println(e); :}
             ;
